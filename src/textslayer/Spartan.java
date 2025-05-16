@@ -38,5 +38,21 @@ public class Spartan {
     /*
     keep track of damage in Spartan class?
     */
+    public void takeDamage( int damage ) {
+        // Apply damage to shield first, then health
+        int shieldDamage = Math.min(sheild, damage);
+        shield -= shieldDamage;
+        health -= Math.max(0, damage - shieldDamage);
+    }
+    
+    public boolean isAlive() {
+        return health > 0;
+    }
+    
+    @Override
+    public String toString() {
+        return team.getName() + " Spartan [Health: " + health + ", Shield: " + shield +
+           ", Position: (" + position.getX() + "," + position.getY() + ")]";
+    }
     
 }

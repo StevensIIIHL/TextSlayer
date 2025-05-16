@@ -26,6 +26,13 @@ public class GameEngine {
             System.out.println("\n=== Round " + round + " ===");
             //map.display();
             round++;
+            
+            for (Spartan s : Team.RED.getSpartans()) {
+                System.out.println(s);
+            }
+            for (Spartan s : Team.BLUE.getSpartans()) {
+                System.out.println(s);
+            }
         }
         declareWinner();
     }
