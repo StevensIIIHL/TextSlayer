@@ -5,9 +5,11 @@
 package textslayer;
 
 /**
- *
- * @author sinn3
+ *  Harold Stevens
+ *  5/15/2025
+ *  Text Slayer
  */
+
 public class MapGrid {
     private static final int SIZE = 8;
     private final Position[][] grid;
@@ -19,29 +21,29 @@ public class MapGrid {
                 grid[x][y] = new Position(x, y);
             }
         }
-    }
+    } // Default
 
-    public boolean isValidMove(Team team, int x, int y) {
+    public boolean isValidMove( Team team, int x, int y ) {
         if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return false;
         return grid[x][y].getOccupants().getOrDefault(team, 0) < 2;
-    }
+    } // isValidMove
 
     public void display() {
-        System.out.println("\nCurrent Battlefield:");
-        for (int y = 0; y < SIZE; y++) {
-            for (int x = 0; x < SIZE; x++) {
+        System.out.println( "\nCurrent Battlefield:" );
+        for ( int y = 0; y < SIZE; y++ ) {
+            for ( int x = 0; x < SIZE; x++ ) {
                 Position pos = grid[x][y];
-                String red = pos.getOccupants().getOrDefault(Team.RED, 0) > 0 ? 
-                    "R" + pos.getOccupants().get(Team.RED) : "";
-                String blue = pos.getOccupants().getOrDefault(Team.BLUE, 0) > 0 ? 
-                    "B" + pos.getOccupants().get(Team.BLUE) : "";
+                String red = pos.getOccupants().getOrDefault( Team.RED, 0 ) > 0 ? 
+                    "R" + pos.getOccupants().get( Team.RED ) : "";
+                String blue = pos.getOccupants().getOrDefault( Team.BLUE, 0 ) > 0 ? 
+                    "B" + pos.getOccupants().get( Team.BLUE ) : "";
                 System.out.printf("[%-5s]", red + " " + blue);
             }
             System.out.println();
         }
-    }
+    } // display
 
-    public Position getPosition(int x, int y) {
+    public Position getPosition( int x, int y ) {
         return grid[x][y];
-    }
-}
+    } // getPosition
+} // MapGrid

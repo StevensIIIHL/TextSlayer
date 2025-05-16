@@ -5,17 +5,10 @@
 package textslayer;
 
 /**
- *
- * @author sinn3
+ *  Harold Stevens
+ *  5/15/2025
+ *  Text Slayer
  */
-
-/*
-
-Classes to implement
-
-Position Class (to keep track of position on the map) Should I add height? 3 dimentional arrays?
-
-*/
 
 public class Spartan {
 
@@ -26,7 +19,7 @@ public class Spartan {
     
     public Spartan(Team team) {
         this.team = team;
-    }
+    } // Default
     
     // Getters and Setters
     public int getHealth() { return health; }
@@ -35,24 +28,20 @@ public class Spartan {
     public Position getPosition() { return position; }
     public void setPosition(Position position) { this.position = position; }
     
-    /*
-    keep track of damage in Spartan class?
-    */
     public void takeDamage( int damage ) {
         // Apply damage to shield first, then health
-        int shieldDamage = Math.min(sheild, damage);
+        int shieldDamage = Math.min(shield, damage);
         shield -= shieldDamage;
         health -= Math.max(0, damage - shieldDamage);
-    }
+    } // takeDamage()
     
     public boolean isAlive() {
         return health > 0;
-    }
+    } // isAlive()
     
     @Override
     public String toString() {
         return team.getName() + " Spartan [Health: " + health + ", Shield: " + shield +
            ", Position: (" + position.getX() + "," + position.getY() + ")]";
-    }
-    
-}
+    } // toString()
+} // Spartan
