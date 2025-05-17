@@ -10,112 +10,114 @@ package textslayer;
  *  Text Slayer
  */
 
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
-public class GameEngine {
+public class GameEngine extends JFrame {
+    private final int SIZE = 8;
     private final MapGrid map = new MapGrid();
+    private final Team redTeam = new Team("Red");
+    private final Team blueTeam = new Team("Blue");
     private Team currentTeam;
     private int round = 1;
-    private final Scanner scanner = new Scanner(System.in);
+    private JLabel statusLabel;
+    private JButton[][] gridButtons;
 
-    public void startGame() {
+    public GameEngine() {
+        setTitle("Spartan War - Red vs Blue");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Status label
+        statusLabel = new JLabel("Welcome to Spartan War!");
+        add(statusLabel, BorderLayout.NORTH);
+
+        // Grid Panel
+        JPanel gridPanel = new JPanel(new GridLayout(SIZE + 1, SIZE + 1));
+        gridButtons = new JButton[SIZE][SIZE];
+
+        // Top-left empty cell for headers
+        gridPanel.add(new JLabel(" "));
+
+        // Column headers
+        for (int x = 0; x < SIZE; x++) {
+            JLabel label = new JLabel("" + x, SwingConstants.CENTER);
+            gridPanel.add(label);
+        }
+
+        // Row headers and grid buttons
+        for (int y = 0; y < SIZE; y++) {
+            JLabel rowLabel = new JLabel("" + y, SwingConstants.CENTER);
+            gridPanel.add(rowLabel);
+            for (int x = 0; x < SIZE; x++) {
+                JButton btn = new JButton();
+                btn.setMargin(new Insets(2, 2, 2, 2));
+                btn.setFont(new Font("Monospaced", Font.PLAIN, 10));
+                final int fx = x, fy = y;
+                btn.addActionListener(e -> cellClicked(fx, fy));
+                gridButtons[x][y] = btn;
+                gridPanel.add(btn);
+            }
+        }
+
+        add(gridPanel, BorderLayout.CENTER);
+
+        // Start game logic
         initializePositions();
         determineFirstTurn();
-        gameLoop();
-    } // startGame()
-    
+        updateGrid();
+
+        setSize(600, 600);
+        setVisible(true);
+    }
+
     private void initializePositions() {
-        // Initial positioning logic
-        for (Spartan s : Team.RED.getSpartans()) {
+        for (Spartan s : redTeam.getSpartans()) {
             s.setPosition(map.getPosition(0, 0));
-            map.getPosition(0, 0).addSpartan(Team.RED);
+            map.getPosition(0, 0).addSpartan(redTeam);
         }
-        for (Spartan s : Team.BLUE.getSpartans()) {
-            s.setPosition(map.getPosition(7, 7));
-            map.getPosition(7, 7).addSpartan(Team.BLUE);
+        for (Spartan s : blueTeam.getSpartans()) {
+            s.setPosition(map.getPosition(SIZE - 1, SIZE - 1));
+            map.getPosition(SIZE - 1, SIZE - 1).addSpartan(blueTeam);
         }
-    } // initializePositions()
-    
+    }
+
     private void determineFirstTurn() {
-        int redRoll = ThreadLocalRandom.current().nextInt(1, 9);
-        int blueRoll = ThreadLocalRandom.current().nextInt(1, 9);
-        currentTeam = (redRoll > blueRoll) ? Team.RED : Team.BLUE;
-        System.out.println("First turn goes to: " + currentTeam.getName());
-    } // determineFirstTurn()
-    
-    private void gameLoop() {
-        while (!gameOver()) {
-            System.out.println("\n=== Round " + round + " ===");
-            map.display();
-            processRound();
-            round++;
-            
-            for (Spartan s : Team.RED.getSpartans()) {
-                System.out.println(s);
-            }
-            for (Spartan s : Team.BLUE.getSpartans()) {
-                System.out.println(s);
-            }
+        int redRoll = (int) (Math.random() * 8) + 1;
+        int blueRoll = (int) (Math.random() * 8) + 1;
+        if (redRoll >= blueRoll) {
+            currentTeam = redTeam;
+        } else {
+            currentTeam = blueTeam;
         }
-        declareWinner();
-    } // gameLoop()
-    
-    private void processRound() {
-        // Activation order logic
-        List<Spartan> activationOrder = new ArrayList<>();
-        activationOrder.addAll(currentTeam.getAliveSpartans());
-        activationOrder.addAll((currentTeam == Team.RED) ? 
-            Team.BLUE.getAliveSpartans() : Team.RED.getAliveSpartans());
-        
-        for (Spartan s : activationOrder) {
-            if (s.isAlive()) {
-                takeTurn(s);
+        statusLabel.setText("First turn: " + currentTeam.getName() + " team. Click a cell to move.");
+    }
+
+    private void updateGrid() {
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
+                Position pos = map.getPosition(x, y);
+                String text = "";
+                int redCount = pos.getOccupants().getOrDefault(redTeam, 0);
+                int blueCount = pos.getOccupants().getOrDefault(blueTeam, 0);
+                if (redCount > 0) text += "R" + redCount + " ";
+                if (blueCount > 0) text += "B" + blueCount;
+                gridButtons[x][y].setText(text.trim());
             }
-        }
-        currentTeam = (currentTeam == Team.RED) ? Team.BLUE : Team.RED;
-    } // processRound()
-    
-    private void takeTurn( Spartan spartan ) {
-        System.out.println( "\n" + spartan.getTeam().getName() + " Spartan's turn");
-        move( spartan );
-        attack( spartan );
-    } // takeTurn()
-    
-    private void move( Spartan spartan ) {
-        System.out.print( "Enter new X, Y coordinates to move (0 - 7): ");
-        int x = scanner.nextInt();
-        int y = scanner.nextInt();
-        
-        if ( map.isValidMove( spartan.getTeam(), x, y )) {
-            spartan.getPosition().removeSpartan( spartan.getTeam() );
-            spartan.setPosition( map.getPosition( x, y ));
-            map.getPosition(x, y).addSpartan( spartan.getTeam() );
         }
     }
-    
-    private void attack( Spartan attacker ) {
-        System.out.print( "Attack with (1) Rifle or (2) Knife: ");
-        int choice = scanner.nextInt();
-        
-        if ( choice == 1 ) {
-            rifleAttack( attacker );
-        } else if ( choice == 2 ) {
-            knifeAttack( attacker );
-        }
+
+    // Example: handle cell click (expand with real move/attack logic)
+    private void cellClicked(int x, int y) {
+        JOptionPane.showMessageDialog(this, "Cell clicked: (" + x + ", " + y + ")");
+        // Here you would implement move/attack selection dialogs and update state
+        // After updating state, call updateGrid() and update statusLabel
     }
-    
-    private boolean gameOver() {
-        //implement team class
-        return Team.RED.getScore() >=4 || Team.Blue.getScore() >= 4;
-    } // gameOver()
-    
-    private void declareWinner() {
-        Team winner = Team.RED.getScore() >= ? Team.RED : Team.BLUE;
-        // print winner
-    } // declareWinner()
 
     public static void main(String[] args) {
-        new GameEngine().startGame();
-    } // main()
-} // GameEngine
+        // Use Swing thread
+        SwingUtilities.invokeLater(GameEngine::new);
+    }
+}
+
