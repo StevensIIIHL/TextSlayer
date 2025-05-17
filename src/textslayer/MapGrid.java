@@ -54,7 +54,7 @@ public class MapGrid {
     public void placeBuildings() {
         Random rand = new Random();
         int buildingsPlaced = 0;
-        while (buildingsPlaced < 2) {
+        while (buildingsPlaced < 3) {
             int x = rand.nextInt(SIZE - 2) + 1; // 1 to 6
             int y = rand.nextInt(SIZE - 2) + 1; // 1 to 6
             // Check overlap

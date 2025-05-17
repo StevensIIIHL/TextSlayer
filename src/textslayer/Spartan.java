@@ -24,6 +24,7 @@ public class Spartan {
     private final Team team;
     private Position position;
     private boolean hasActed = false; // Used for round order
+    private boolean extraMoveNextTurn = false;
 
     public Spartan(Team team) {
         this.team = team;
@@ -35,8 +36,10 @@ public class Spartan {
     public Position getPosition() { return position; }
     public void setPosition(Position position) { this.position = position; }
     public boolean isAlive() { return health > 0; }
+    public boolean hasExtraMove() { return extraMoveNextTurn; }
     public boolean hasActed() { return hasActed; }
     public void setHasActed(boolean acted) { this.hasActed = acted; }
+    public void setExtraMove(boolean val) { extraMoveNextTurn = val; }
 
     /**
      * Increases shield by 1, up to max 2.

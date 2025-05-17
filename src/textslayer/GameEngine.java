@@ -162,7 +162,9 @@ public class GameEngine extends JFrame {
             nextTurn();
             return;
         }
-        statusLabel.setText(selectedSpartan.getTeam().getName() + " Spartan's turn: Select a cell to move (up to 2 cells, buildings block).");
+        updateGrid();
+        int maxMove = selectedSpartan.hasExtraMove() ? 3 : 2;
+        statusLabel.setText(selectedSpartan.getTeam().getName() + " Spartan's turn: Select a cell to move (up to " + maxMove + " cells, buildings block).");
     }
 
     /**
@@ -174,9 +176,10 @@ public class GameEngine extends JFrame {
             return;
         }
         Position oldPos = selectedSpartan.getPosition();
+        int maxMove = selectedSpartan.hasExtraMove() ? 3 : 2;
         int dist = Math.abs(oldPos.getX() - x) + Math.abs(oldPos.getY() - y);
-        if (dist > 2) {
-            statusLabel.setText("Can only move up to 2 cells.");
+        if (dist > maxMove) {
+            statusLabel.setText("Can only move up to " + maxMove + " cells.");
             return;
         }
         if (map.isBuilding(x, y)) {
@@ -201,6 +204,7 @@ public class GameEngine extends JFrame {
         gridButtons[oldPos.getX()][oldPos.getY()].setText("");
         statusLabel.setText(selectedSpartan.getTeam().getName() + " Spartan moved to (" + x + "," + y + ")");
         selectedSpartan.setHasActed(true);
+        selectedSpartan.setExtraMove(false);
 
         // After move, prompt for attack or skip
         javax.swing.Timer timer = new javax.swing.Timer(800, evt -> {
@@ -228,6 +232,7 @@ public class GameEngine extends JFrame {
             doAttack(spartan);
         } else {
             // Skip: could allow extra movement next round (not implemented here)
+            spartan.setExtraMove(true);
             statusLabel.setText("Attack skipped. Click 'Next Turn' for next Spartan.");
             currentTurnIndex++;
             selectedSpartan = null;
@@ -291,8 +296,8 @@ public class GameEngine extends JFrame {
         }
 
         // Roll dice for attack/defense
-        int attackerSuccess = rollDice(3);
-        int defenderSuccess = rollDice(2);
+        int attackerSuccess = rollAttackerDice(4);
+        int defenderSuccess = rollDefenderDice(2);
         int netSuccess = Math.max(0, attackerSuccess - defenderSuccess);
 
         int damage = 0;
@@ -357,12 +362,22 @@ public class GameEngine extends JFrame {
     /**
      * Rolls n 6-sided dice, returns number of dice >= 4.
      */
-    private int rollDice(int n) {
+    private int rollAttackerDice(int n) {
         Random rand = new Random();
         int success = 0;
         for (int i = 0; i < n; i++) {
             int roll = rand.nextInt(6) + 1;
-            if (roll >= 4) success++;
+            if (roll >= 3) success++;
+        }
+        return success;
+    }
+    
+    private int rollDefenderDice(int n) {
+        Random rand = new Random();
+        int success = 0;
+        for (int i = 0; i < n; i++) {
+            int roll = rand.nextInt(6) + 1;
+            if (roll >= 5) success++;
         }
         return success;
     }
@@ -390,6 +405,20 @@ public class GameEngine extends JFrame {
             for (int y = 0; y < SIZE; y++) {
                 Position pos = map.getPosition(x, y);
                 JButton btn = gridButtons[x][y];
+                
+                // Highlight if this is the active Spartan's cell
+                if (selectedSpartan != null &&
+                    selectedSpartan.getPosition().getX() == x &&
+                    selectedSpartan.getPosition().getY() == y) {
+                    btn.setBackground(Color.YELLOW); // Highlight color
+                    btn.setOpaque(true);
+                    btn.setBorderPainted(true);
+                } else {
+                    btn.setBackground(null); // Default color
+                    btn.setOpaque(true);
+                    btn.setBorderPainted(true);
+                }
+                
                 String text = "";
                 if (pos.isBuilding()) {
                     text = "BUILD";
@@ -402,17 +431,17 @@ public class GameEngine extends JFrame {
                 gridButtons[x][y].setText(text.trim());
                 
                 // Highlight if this is the active Spartan's cell
-            if (selectedSpartan != null &&
-                selectedSpartan.getPosition().getX() == x &&
-                selectedSpartan.getPosition().getY() == y) {
-                btn.setBackground(Color.YELLOW); // Highlight color
-                btn.setOpaque(true);
-                btn.setBorderPainted(true);
-            } else {
-                btn.setBackground(null); // Default color
-                btn.setOpaque(true);
-                btn.setBorderPainted(true);
-            }
+                if (selectedSpartan != null &&
+                    selectedSpartan.getPosition().getX() == x &&
+                    selectedSpartan.getPosition().getY() == y) {
+                    btn.setBackground(Color.YELLOW); // Highlight color
+                    btn.setOpaque(true);
+                    btn.setBorderPainted(true);
+                } else {
+                    btn.setBackground(null); // Default color
+                    btn.setOpaque(true);
+                    btn.setBorderPainted(true);
+                }
             }
         }
     }
