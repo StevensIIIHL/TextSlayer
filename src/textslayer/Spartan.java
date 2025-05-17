@@ -15,73 +15,57 @@ package textslayer;
  * Each Spartan belongs to a team, has health, shield, and a position on the map.
  */
 
+/**
+ * Represents a Spartan unit in the game.
+ */
 public class Spartan {
     private int health = 4;
     private int shield = 2;
     private final Team team;
     private Position position;
+    private boolean hasActed = false; // Used for round order
 
-    /**
-     * Constructs a Spartan belonging to the given team.
-     * @param team The team this Spartan belongs to.
-     */
-    
     public Spartan(Team team) {
         this.team = team;
-    } // Defaul
+    }
 
-    // Getters and Setters
-
-    /** @return The Spartan's current health. */
     public int getHealth() { return health; }
-
-    /** @return The Spartan's current shield. */
     public int getShield() { return shield; }
-
-    /** @return The Spartan's team. */
     public Team getTeam() { return team; }
-
-    /** @return The Spartan's current position. */
     public Position getPosition() { return position; }
-
-    /** Sets the Spartan's position. */
     public void setPosition(Position position) { this.position = position; }
+    public boolean isAlive() { return health > 0; }
+    public boolean hasActed() { return hasActed; }
+    public void setHasActed(boolean acted) { this.hasActed = acted; }
 
     /**
-     * Applies rifle damage (1 point) to this Spartan.
-     * Damage is absorbed by shield first, then health.
-     * @param damage The amount of damage (should be 1 for rifle).
+     * Increases shield by 1, up to max 2.
      */
-    public void takeRifleDamage(int damage) {
-        int shieldDamage = Math.min(shield, damage);
-        shield -= shieldDamage;
-        health -= Math.max(0, damage - shieldDamage);
-    } // takeRifleDamage
+    public void regenerateShield() {
+        if (shield < 2) shield++;
+    }
 
     /**
-     * Applies knife damage to this Spartan.
-     * Knife first depletes 1 shield, then deals 1 damage to shield or health.
+     * Applies damage to this Spartan, first to shield, then health.
+     * Damage is reduced by 2 (damage reduction).
      */
-    
-    public void takeKnifeDamage() {
-        if (shield > 0) shield--; // deplete 1 shield
-        if (shield > 0) {
-            shield--; // knife damage to remaining shield
-        } else {
-            health--; // knife damage to health if shield is gone
+    public void applyDamage(int damage, boolean isKnife) {
+        // Knife: first reduce shield by 1
+        if (isKnife && shield > 0) {
+            shield--;
         }
-    } // takeKnifeDamage
+        // Apply damage reduction
+        int reduced = Math.max(0, damage - 2);
+        // Apply to shield first
+        int shieldDamage = Math.min(shield, reduced);
+        shield -= shieldDamage;
+        int healthDamage = Math.max(0, reduced - shieldDamage);
+        health -= healthDamage;
+    }
 
-    /** @return True if the Spartan is alive (health > 0). */
-    public boolean isAlive() {
-        return health > 0;
-    } // isAlive
-
-    /** @return A readable string representation of this Spartan. */
     @Override
     public String toString() {
-        return team.getName() + " Spartan [Health: " + health + ", Shield: " + shield +
-                ", Position: (" + position.getX() + "," + position.getY() + ")]";
-    } // toString
+        return team.getName() + " Spartan [HP: " + health + ", SH: " + shield +
+                ", (" + position.getX() + "," + position.getY() + ")]";
+    }
 }
-

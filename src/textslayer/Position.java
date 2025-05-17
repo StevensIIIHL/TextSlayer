@@ -14,56 +14,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Position represents a cell on the map grid.
- * It tracks how many Spartans from each team are present in the cell.
+ * Represents a cell on the grid.
  */
-
 public class Position {
-    private int x;
-    private int y;
-    private Map<Team, Integer> occupants = new HashMap<>();
+    private final int x, y;
+    private final Map<Team, Integer> occupants = new HashMap<>();
+    private boolean isBuilding = false;
 
-    /**
-     * Constructs a Position at the given (x, y) coordinates.
-     * @param x The column index.
-     * @param y The row index.
-     */
     public Position(int x, int y) {
-        this.x = x;
-        this.y = y;
-    } // Position
+        this.x = x; this.y = y;
+    }
 
-    /**
-     * Attempts to add a Spartan from the given team to this position.
-     * Only 2 Spartans from the same team are allowed in one cell.
-     * @param team The team of the Spartan to add.
-     * @return True if the Spartan was added, false if the cell is full for that team.
-     */
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public boolean isBuilding() { return isBuilding; }
+    public void setBuilding(boolean b) { isBuilding = b; }
+
     public boolean addSpartan(Team team) {
         int current = occupants.getOrDefault(team, 0);
-        if (current < 2) {
+        int total = occupants.values().stream().mapToInt(Integer::intValue).sum();
+        if (current < 2 && total < 4) {
             occupants.put(team, current + 1);
             return true;
         }
         return false;
-    } // addSpartan
+    }
 
-    /**
-     * Removes a Spartan from the given team from this position.
-     * Does nothing if no such Spartan is present.
-     * @param team The team of the Spartan to remove.
-     */
     public void removeSpartan(Team team) {
         occupants.computeIfPresent(team, (k, v) -> v > 0 ? v - 1 : 0);
-    } // removeSpartan
+    }
 
-    /** @return A map of teams to the number of their Spartans in this cell. */
     public Map<Team, Integer> getOccupants() { return occupants; }
-
-    /** @return The column index of this position. */
-    public int getX() { return x; }
-
-    /** @return The row index of this position. */
-    public int getY() { return y; }
-} // Positon
-
+}
