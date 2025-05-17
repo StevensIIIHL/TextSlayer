@@ -1,16 +1,19 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+*/
+
 package textslayer;
 
 /**
- *
- * @author sinn3
+ *  Harold Stevens
+ *  5/15/2025
+ *  Text Slayer
  */
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Team {
     private final String name;
@@ -34,6 +37,6 @@ public class Team {
     } // increamentScore
     
     public List<Spartan> getAliveSpartans() {
-        return spartans.stream().filter( Spartan::isAlive ).toList();
+        return spartans.stream().filter( Spartan::isAlive ).collect( Collectors.toList() );
     } // getAliveSpartans
 } // Team

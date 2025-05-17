@@ -28,15 +28,23 @@ public class MapGrid {
         return grid[x][y].getOccupants().getOrDefault(team, 0) < 2;
     } // isValidMove
 
-    public void display() {
-        System.out.println( "\nCurrent Battlefield:" );
-        for ( int y = 0; y < SIZE; y++ ) {
-            for ( int x = 0; x < SIZE; x++ ) {
+    public void display(Team redTeam, Team blueTeam) {
+        System.out.println("\nCurrent Battlefield:");
+        // Print column headers
+        System.out.print("   ");
+        for (int x = 0; x < SIZE; x++) {
+            System.out.printf("  %d  ", x);
+        }
+        System.out.println();
+        for (int y = 0; y < SIZE; y++) {
+            // Print row header
+            System.out.printf("%d ", y);
+            for (int x = 0; x < SIZE; x++) {
                 Position pos = grid[x][y];
-                String red = pos.getOccupants().getOrDefault( Team.RED, 0 ) > 0 ? 
-                    "R" + pos.getOccupants().get( Team.RED ) : "";
-                String blue = pos.getOccupants().getOrDefault( Team.BLUE, 0 ) > 0 ? 
-                    "B" + pos.getOccupants().get( Team.BLUE ) : "";
+                String red = pos.getOccupants().getOrDefault(redTeam, 0) > 0 ?
+                        "R" + pos.getOccupants().get(redTeam) : "";
+                String blue = pos.getOccupants().getOrDefault(blueTeam, 0) > 0 ?
+                        "B" + pos.getOccupants().get(blueTeam) : "";
                 System.out.printf("[%-5s]", red + " " + blue);
             }
             System.out.println();
