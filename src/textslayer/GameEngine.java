@@ -70,7 +70,7 @@ public class GameEngine extends JFrame {
 
         setSize(600, 600);
         setVisible(true);
-    }
+    } // GameEngine
 
     private void initializePositions() {
         for (Spartan s : redTeam.getSpartans()) {
@@ -81,7 +81,7 @@ public class GameEngine extends JFrame {
             s.setPosition(map.getPosition(SIZE - 1, SIZE - 1));
             map.getPosition(SIZE - 1, SIZE - 1).addSpartan(blueTeam);
         }
-    }
+    } // initializePositions
 
     private void determineFirstTurn() {
         int redRoll = (int) (Math.random() * 8) + 1;
@@ -92,7 +92,7 @@ public class GameEngine extends JFrame {
             currentTeam = blueTeam;
         }
         statusLabel.setText("First turn: " + currentTeam.getName() + " team. Click a cell to move.");
-    }
+    } // determineFirstTurn
 
     private void updateGrid() {
         for (int x = 0; x < SIZE; x++) {
@@ -106,18 +106,18 @@ public class GameEngine extends JFrame {
                 gridButtons[x][y].setText(text.trim());
             }
         }
-    }
+    } // updateGrid
 
     // Example: handle cell click (expand with real move/attack logic)
     private void cellClicked(int x, int y) {
         JOptionPane.showMessageDialog(this, "Cell clicked: (" + x + ", " + y + ")");
         // Here you would implement move/attack selection dialogs and update state
         // After updating state, call updateGrid() and update statusLabel
-    }
+    } // cellClicked
 
     public static void main(String[] args) {
         // Use Swing thread
         SwingUtilities.invokeLater(GameEngine::new);
-    }
-}
+    } // main
+} // GameEngine
 

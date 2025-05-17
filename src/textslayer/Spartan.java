@@ -25,9 +25,10 @@ public class Spartan {
      * Constructs a Spartan belonging to the given team.
      * @param team The team this Spartan belongs to.
      */
+    
     public Spartan(Team team) {
         this.team = team;
-    }
+    } // Defaul
 
     // Getters and Setters
 
@@ -55,12 +56,13 @@ public class Spartan {
         int shieldDamage = Math.min(shield, damage);
         shield -= shieldDamage;
         health -= Math.max(0, damage - shieldDamage);
-    }
+    } // takeRifleDamage
 
     /**
      * Applies knife damage to this Spartan.
      * Knife first depletes 1 shield, then deals 1 damage to shield or health.
      */
+    
     public void takeKnifeDamage() {
         if (shield > 0) shield--; // deplete 1 shield
         if (shield > 0) {
@@ -68,18 +70,18 @@ public class Spartan {
         } else {
             health--; // knife damage to health if shield is gone
         }
-    }
+    } // takeKnifeDamage
 
     /** @return True if the Spartan is alive (health > 0). */
     public boolean isAlive() {
         return health > 0;
-    }
+    } // isAlive
 
     /** @return A readable string representation of this Spartan. */
     @Override
     public String toString() {
         return team.getName() + " Spartan [Health: " + health + ", Shield: " + shield +
                 ", Position: (" + position.getX() + "," + position.getY() + ")]";
-    }
+    } // toString
 }
 

@@ -28,14 +28,13 @@ public class Team {
      * Constructs a team with the given name and 4 Spartans.
      * @param name The name of the team ("Red" or "Blue").
      */
-    
     public Team(String name) {
         this.name = name;
         this.spartans = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             spartans.add(new Spartan(this));
         }
-    }
+    } // default
 
     /** @return The list of Spartans on this team. */
     public List<Spartan> getSpartans() { return spartans; }
@@ -49,12 +48,12 @@ public class Team {
     /** Increments the team's score by 1. */
     public void incrementScore() {
         score++;
-    }
+    } // incrementScore
 
     /**
      * @return A list of Spartans on this team that are still alive.
      */
     public List<Spartan> getAliveSpartans() {
         return spartans.stream().filter(Spartan::isAlive).collect(Collectors.toList());
-    }
-}
+    } // getAliveSpartans
+} // Team
